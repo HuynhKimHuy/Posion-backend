@@ -3,6 +3,5 @@
         fn(req,res,next).catch(next)
     }
 }
-    
-export default asyncHandler
 
+export default asyncHandler

@@ -12,17 +12,43 @@ class AccessController {
   };
   
   static signin = async(req,res,next)=>{
+    const metadata = await AccessService.signin(req.body)
+    const refreshToken = metadata?.tokens?.refreshToken
+    if (refreshToken) {
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+    }
     new OK({
       message:"ok",
       statusCode:200,
-      metadata: await AccessService.signin(req.body)
+      metadata
     }).send(res)
   }
 
   static logout = async(req,res,next)=>{
     const { refreshToken } = req.cookies || {};
-    await AccessService.logout({ token: refreshToken });
+    const token = refreshToken || req.body?.refreshToken;
+    await AccessService.logout({ token });
     res.clearCookie("refreshToken", { httpOnly: true, sameSite: "lax" });
+    new OK({
+      message:"ok",
+      statusCode:200,
+      metadata: {}
+    }).send(res)
+  }
+
+  static refreshToken = async(req,res,next)=>{
+    const { refreshToken } = req.cookies || {};
+    const token = refreshToken || req.body?.refreshToken;
+    const metadata = await AccessService.refreshToken({ token });
+    new OK({
+      message:"ok",
+      statusCode:200,
+      metadata
+    }).send(res)
   }
 }
 export default AccessController

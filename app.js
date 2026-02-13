@@ -6,23 +6,28 @@ import Database from "./config/config.db.js";
 import router from "./routers/index.js";
 // app.js
 import cookieParser from "cookie-parser";
-
 import compression from "compression";
-
+import cors from 'cors'
 
 config();
 
 Database.getInstance()
-
 const app = express()
 app.use(cookieParser());
-app.use(express.json())
+
 app.use(morgan("dev"));
 app.use(compression())
+app.use(express.json())
+app.use(
+  cors({
+    origin: process.env.URL_CLIENT,
+    credentials: true
+  })
+);
+
+
 
 app.use('/',router)
-
-
 
 
 app.use((req,res,next)=>{

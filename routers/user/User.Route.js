@@ -1,12 +1,8 @@
 import express from 'express'
+import asyncHandler from '../../middleware/asyncHandler.js';
+import { UserController } from '../../controllers/userController.js';
 const UserRouter = express.Router()
 
-UserRouter.get("/me", (req, res) => {
-  return new OK({
-    message: "ok",
-    statusCode: 200,
-    metadata: req.user,
-  }).send(res);
-});
+UserRouter.get("/me", asyncHandler(UserController));
 
 export default UserRouter

@@ -32,3 +32,4 @@ export class Created extends SuccessRespone{
         super({message,statusCode,ResponseStatus,metadata})
     }
 }
+
