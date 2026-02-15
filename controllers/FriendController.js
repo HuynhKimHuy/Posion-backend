@@ -52,5 +52,10 @@ export const getAllFriends = async (req, res) => {
 
 };
 export const getAllFriendRequest = async (req, res) => {
-
+    const userId = req.user?._id;
+    new OK({
+        message: "get all friends completed",
+        statusCode: 200,
+        metadata: await FriendService.getAllFriendRequest(userId)
+    }).send(res)
 };

@@ -58,12 +58,12 @@ class FriendService {
         _id: from._id,
         userName: from?.userName,
         avatarUrl: from?.avatarUrl
+      }
     }
-  }
   };
 
   static declineFriendRequest = async (payload) => {
-    const {requestId,userId} = payload
+    const { requestId, userId } = payload
     const request = await FriendRequestModel.findById(requestId)
 
     if (!request) throw new BadRequestError("Cannot find Request add friend")
@@ -79,17 +79,27 @@ class FriendService {
         { userB: userId },
       ],
     }).populate("userA userB", "_id userName avatarUrl").lean();
-    if (!friends.length) throw new BadRequestError("Cannot find friends");
-    if (friends.length > 0) {
-      return friends.map(friend => {
-        const friendInfo = friend.userA._id.toString() === userId.toString() ? friend.userB : friend.userA; 
-        return {
-          ...friend,
-          friendInfo
-        }
-      });
-    }
-  }
+
+    if (!friends.length) return []
+    return friends.map(friend =>
+      friend.userA._id.toString() === userId.toString()
+        ? friend.userB
+        : friend.userA
+    );
+  };
+
+  // backend/services/FriendService.js
+  static getAllFriendRequest = async (userId) => {
+    const populateFields = "_id username displayName avatarUrl";
+
+    const [sent, received] = await Promise.all([
+      FriendRequest.find({ from: userId }).populate("to", populateFields).lean(),
+      FriendRequest.find({ to: userId }).populate("from", populateFields).lean(),
+    ]);
+
+    return { sent, received };
+  };
 }
+
 
 export default FriendService;
