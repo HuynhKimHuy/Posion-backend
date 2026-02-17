@@ -1,18 +1,25 @@
-export const updateConverStationAfteCreateMessage = async (conversation, message, senderId) => {
+const updateConverStationAfteCreateMessage = (conversation, message, senderId) => {
     conversation.set({
         seenBy: [],
         lastMessageAt: message.createdAt,
         lastMessage: {
             _id: message._id,
             content: message.content,
-            senderId: senderId,
+            senderId,
             createdAt: message.createdAt
         }
     })
-    consversation.participants.forEach((paticipant) => {
-        const messageId = paticipant._id.toString()
-        const isSender = memberId === senderId.toString()
+
+    const senderIdString = senderId?.toString()
+    if (!conversation.unreadCounts) conversation.unreadCounts = new Map()
+
+    conversation.participants.forEach((participant) => {
+        const memberId = participant?.userId?.toString?.() || participant?.toString?.()
+        if (!memberId) return
+
+        const isSender = memberId === senderIdString
         const prevCount = conversation.unreadCounts.get(memberId) || 0
-        conversation.unreadCounts.set(memberId, isSender ? 0 : preCount + 1)
+        conversation.unreadCounts.set(memberId, isSender ? 0 : prevCount + 1)
     })
 }
+export default updateConverStationAfteCreateMessage

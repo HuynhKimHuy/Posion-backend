@@ -1,11 +1,14 @@
+import {BadGatewayError} from "../core/AppError.js";
+import Message from "../models/Message.js";
+
 import Conversation from "../models/Conversation.js";
-import updateConverStationAfteCreateMessage from '../helpers/messageHelper.js'
+import updateConverStationAfteCreateMessage from "../helpers/messageHelper.js";
 class messageService {
     static async sendDirectMessage(payload) {
         const { senderId, recipientId, content, conversationId } = payload;
 
         let conversation
-        if (!content) throw new Error("Content is required")
+        if (!content) throw new BadGatewayError("Content is required")
 
         if (conversationId) {
             conversation = await Conversation.findById(conversationId)
@@ -26,7 +29,13 @@ class messageService {
             senderId,
             content
         })
- 
+
+        if(!message) throw new BadGatewayError("Failed to create message")
+        updateConverStationAfteCreateMessage(conversation,message,senderId)
+        await conversation.save()
+        return {
+            message
+        }
     }
 
     static async sendGroupMessage(payload) {
