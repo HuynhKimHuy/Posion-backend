@@ -3,7 +3,7 @@ import messageService from "../services/MessageService.js";
 export const sendDirectMessage = async (req, res) => {
     const {recipientId, content , conversationId} = req.body
     new OK({
-        message: "OK",
+        message: "Created message successfully",
         statusCode: 200,
         metadata: await messageService.sendDirectMessage({
             senderId: req.user._id,
